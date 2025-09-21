@@ -154,7 +154,7 @@ useEffect(()=>{
         - onFor()  for Comparision, Yup.ref() to refer the state property for comparision 
 
 # Composable UI / Front-End Applications       
-- Parent-Child Components
+- Parcent-Child Components
 - Reusable Components
 - State Sharing Across Component 
 - Complex Composition
@@ -254,3 +254,152 @@ useEffect(()=>{
         - A 'Provider' COmponent
             - Parent Component that manages lifecycle of all components those have Store Subscription
             - This has 'store' property, that is bound with the 'redux store' created using 'configureStore()' method   
+
+- Usig SGA Middleware to manage the Asynchronous Actions from the Redux Apps
+    - Used to Manage 'Side-Effects'    
+        - data fetching using HTTP Calls
+        - performing Async Tasks in browser e.g. File Access, Device Access, Navigation Service access, etc.
+        - Technicaly tis used in case of
+            - Managing outgoing and incomming HTTP Calls to fetch data decoupled from the View
+            - Manage Parallel Long Running Execution e.g. HTTP and Sockets at a time and process data received from them
+            - Background tasks        
+    - Generator Functions
+        - Executes based on Start, Pause, and resume principal
+        - Most suitable functional objects for handling long running Async Operations
+            - Start execution when the function is Invoked
+            - Pause the execution using 'yield' statement
+            - .next() for resuming the execution
+            - Returns the Ietrator sequence of processed values
+````typescript
+function* MyGenerator(){
+    .......
+    yield
+}
+
+````
+- The redus-saga middleware
+    - offers a concept of 'effects'
+        - Manages Asynchronous calls / operations
+    - Generator functions
+        - takeLatest(), listen to the input actions dispatched from UI
+        - call(), initiate the Async operations
+        - put(), dispatch output action from effect
+        - all(), runs mutiple effects in parallel
+        
+
+
+- function abc(function(function(function(){}){}){
+
+});
+function cb(function(){
+    return Promise(success, reject)
+}){}
+abc(cb)
+
+# RTK Query
+- Part of redux js toolkit
+- Provides followins important Core concepts for React-redux
+    - API Slicing
+        - A Single Central Object that provides easy configurtaion for 
+            - Accessing API Endpoints
+            - Configuration for fetching Data 
+    - Base Query
+        - uses 'fetchBaseQuery', a wrappter around the 'fetch' object
+            - No need for axios
+            - No need for seperate Service on React Side to manage GET,POST,PUT, and DELETE
+            - We can configure headers for security from Client-Side
+    - Endpoints
+        - Definition for HTTP Operations e.g. GET,POST,PUT, and DELETE
+        - Data Fetching
+            - The Read Operation
+        - Data Mutation
+            - The Write Operations
+    - Auto-enerated Hooks
+        - Simplication of Endpoint Operations to dispatch actions for Async Operations
+        - if the endpoint is 'getData()', then the generated hook will be 'useGetData()'
+        - This is great feature of RTK Query 
+    - Caching
+        - Cache the received data to avoid unnecessary re-fetching
+            - Cache data in redux store
+            - Great boost for the app performance
+            - Cache is consistent across all UI (components)
+        - Easy Cache COntrol
+            - INvalidate cache on Write Operations by tagging it
+            - Interval based data polling
+                - Real-time apps
+            - Sometime polling increases traffic, for un-predicated data changes on server, use the sockets on server-side instead of polling   
+
+
+# RTK Query Object Model
+    - The 'createApi()' a RTK Query Core funciton, this creates an API SLice to define interation with external / Server-Side Remote REST APIs
+    - createApi(properties)
+        - reducerPath: A unique identifier for each API slice in Redux Store
+        - baseQuery: The function that is used to make the HTTP Requests
+        - endpoints: TO define actual Query that further generates the Hooks
+        - tagTypes: Array of strings, that represents a Tag that is applied to each of the endpoints to take an action on it e.g. invalidate the Cache
+    - createApi() offering
+        - a reducer
+        - a miidleware
+        - hooks
+    - Properties of auto-generated hooks
+        - data: The Actual Data fetched
+        - isLoading: A state property that will keep track of fetch complete, true when the data is loading for the first time
+        - isFetching: A State property that will track the fetch operation, true for each fetch (or re-fetch)
+        - isError: true, in case whern fetcing failed 
+        - Hooks Parameters
+            - State operated on while fetching the data (undefined as initial value)
+            - pollingInterval: in seconds, to fetch data after the interval
+            - refetchOnFocus: When component is mounted, fetc data again (invalidate the previous cache)
+
+
+ 
+# Authorized Access to the React Application
+- Application's own User/Role and Policy Store
+    - Developrs are provided with database that has Users, Role, Permissions, etc. tables
+    - Developer's must access these tables to perform User-Based / Role-Based security and Provide access of applicaitons based on Permissions.
+- The Cloud Security for Applicaiton that is deployed on Cloud
+    - MSAL JS Package
+     
+# React Extended Features
+- Lazy Loading
+    - A technique to load components Lazily i.e. only when we need them
+    - More useful in case of Routing typically, when we need to load components those have side-effects (HTTP Calls)
+    - A Reason for Performance Improvization
+    - Built-In support by React usig 'React.lazy()'
+    - A De-facto Standard for MiCro Frontend applications
+    - Benefits of Lazy Loading
+        - Reduce the Application Bundle Size
+        - Improve the Performance and responsiveness of the large complex applications 
+    - Sample code
+````typescript
+    const MyComponent = React.lazy('./MyComponent')
+    // The React will look for the component and if found, it will be rendered
+    // We need to have a fallback in case the component does not found or crached
+    // Suspense fallback
+    <Suspense fallback={<div>Loading......</div>}>
+      <MyComponent/>
+    </Suspense>  
+
+````
+- Portal
+    - It allows the rendering of the React Component into the different part of the DOM, whihch is outside of the 'root'.
+    - Although it is outside of the root, it still maintain State and Evening of React
+- Profiler     
+
+- The useReducer() hook
+    - In case of the state updates with Complex-logic, then the 'useState()' fails
+        - useState() can be used to update 'only-one' state property e.g. x,y,ProductInfo
+        - if ProductInfo also affects the Orders, the useState() is not ale to do that
+        - Local updates of multiple states in not a job of useState()
+````typescript
+  const [product, setProduct] = useState<Product>(new Product());
+  const [order, setOrder] = useState<Order>(new Order());
+````
+    - The 'useReducer()' is powerful hook for managing complex state logic, specially in case when onse state-update is dependant on multiple actions and hence causing other state properties also get impacted
+
+- We can create a Custom Hook with useReducer() to provide a complex state updates by encapsulating the complex logic in it.     
+
+- the useReducer(reducer, initialState)
+    - initialState: a complex object that has the states to be updates
+    - reducer: an object that listen to multiple actions and update state accrodingly to mutate initialState to  next value
+    
